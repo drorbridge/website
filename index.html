@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bridge Interactive - AI-Powered SaaS Solutions</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <img src="assets/bridge-logo.jpeg" alt="Bridge" class="logo">
+                    <span class="brand-text">Bridge Agile</span>
+                </div>
+                <div class="nav-menu">
+                    <a href="#products" class="nav-link">Product</a>
+                    <a href="#about" class="nav-link">About</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                </div>
+                <div class="nav-actions">
+                    <button class="btn-primary">Get Started</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Bridging complexity with simplicity
+                </h1>
+                <!-- Replace the existing hero-subtitle paragraph with this: -->
+
+                <!-- Option 1: Different weights and colors -->
+                <div class="hero-subtitle">
+                    <div class="line-primary">AI-powered Agile SaaS solutions for tech teams</div>
+                    <div class="line-secondary">The next evolution of agile management</div>
+                    <!-- <div class="line-accent">Intelligent, Intuitive, and designed for modern development </div> -->
+                </div>
+
+
+
+
+                <div class="hero-actions">
+                    <button class="btn-primary btn-large" onclick="openModal('trial')">Start Free Trial</button>
+                    <button class="btn-secondary btn-large" onclick="openModal('demo')">
+                        <i class="fas fa-calendar"></i>
+                        Schedule Demo
+                    </button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">75%</span>
+                        <span class="stat-label">Less Noise</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">50%</span>
+                        <span class="stat-label">Fewer Agile Meetings</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Team Performance Visibility</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Section -->
+    <section id="products" class="products">
+        <div class="container">
+            <div class="section-header">
+                <h2>Built by Agile Users, for Agile Users</h2>
+                <p>Intelligent, Intuitive and designed for modern development</p>
+                <p>Work smarter, faster - Achieve more!</p>
+            </div>
+            <div class="product-hero">
+                <div class="product-main">
+                    <div class="product-icon-large">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M12 2L13.09 8.26L16 6L14.5 9.5L21 12L14.5 14.5L16 18L13.09 15.74L12 22L10.91 15.74L8 18L9.5 14.5L3 12L9.5 9.5L8 6L10.91 8.26L12 2Z"
+                                fill="currentColor" />
+                        </svg>
+                    </div>
+                    <h3>AI-Powered Agile Management</h3>
+                    <p class="product-description">
+                        Our platform learns from your users and developers, providing true insights on performance
+                        and project management in a simple, intuitive way. No more noise, just actionable intelligence
+                        that helps your team deliver better, faster.
+                    </p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 3v18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                <path d="m19 9-5 5-4-4-3 3" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                        <h4>Real Measurement</h4>
+                        <p>Get actual insights into team performance, not vanity metrics</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" />
+                                <path d="M9 9h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                <path d="M15 9h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                            </svg>
+                        </div>
+                        <h4>AI That Learns</h4>
+                        <p>The system adapts to your team's workflow and provides personalized recommendations</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6 12L10 8L14 12L18 8" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                        <h4>Noise Reduction</h4>
+                        <p>Eliminate the clutter and focus on what actually moves the needle</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor"
+                                    stroke-width="2" />
+                                <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" />
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="2" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" />
+                            </svg>
+                        </div>
+                        <h4>Intuitive Design</h4>
+                        <p>Built by practitioners who understand the frustrations of existing tools</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                        <h4>Smart Workflows</h4>
+                        <p>Dynamic processes that adapt to your project needs automatically</p>
+                    </div>
+                    <div class="feature-item">
+                        <!-- <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                                <circle cx="12" cy="12" r="6" stroke="currentColor" stroke-width="2" />
+                                <circle cx="12" cy="12" r="2" stroke="currentColor" stroke-width="2" />
+                            </svg>
+                        </div> -->
+                        <h4>True Insights</h4>
+                        <p>Performance analytics that actually help you make better decisions</p>
+                    </div>
+                </div>
+                <div class="product-cta">
+                    <button class="btn-primary btn-large" onclick="openModal('trial')">Start Free Trial</button>
+                    <button class="btn-outline btn-large" onclick="openModal('demo')">Schedule Demo</button>
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- 
+<section class="image-carousel">
+    <div class="carousel-container">
+        <div class="carousel-slide active">
+            <img src="assets/performance_diagonal.jpeg" alt="Performance Analytics" />
+        </div>
+        <div class="carousel-slide">
+            <img src="assets/sprint_diagonal.jpg" alt="Sprint Management" />
+        </div>
+        <div class="carousel-slide">
+            <img src="assets/team_diagonal.jpg" alt="Team Collaboration" />
+        </div>
+        <div class="carousel-slide">
+            <img src="assets/task_diagonal.jpg" alt="Project Creation" />
+        </div>
+    </div>
+    <div class="carousel-dots">
+        <span class="dot active" data-slide="0"></span>
+        <span class="dot" data-slide="1"></span>
+        <span class="dot" data-slide="2"></span>
+        <span class="dot" data-slide="3"></span>
+    </div>
+</section> -->
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Our Mission</h2>
+                    <p class="lead">
+                        Bridge builds next-generation SaaS Agile support platforms for tech-driven companies to work smarter and
+                        scale faster.
+                    </p>
+                    <p>
+                        We develop intuitive, AI-powered backend systems that embed intelligence into daily workflows.
+                        Our mission is to bridge the gap between innovation and execution, turning complex ideas into
+                        beautifully simple solutions.
+                    </p>
+                    <div class="values">
+                        <div class="value">
+                            <h4>Simplicity</h4>
+                            <p>Complex problems deserve elegant solutions</p>
+                        </div>
+                        <div class="value">
+                            <h4>Intelligence</h4>
+                            <p>AI-powered systems that learn and adapt</p>
+                        </div>
+                        <div class="value">
+                            <h4>Scale</h4>
+                            <p>Built for growth from day one</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-visual">
+                    <div class="visual-placeholder">
+                        <svg width="120" height="120" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="contact" class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to bridge the gap?</h2>
+                <p>Join forward-thinking teams who trust Bridge Interactive to power their success.</p>
+                <p style="margin: 1rem 0; font-size: 1.1rem;">Questions? Contact us at <a
+                        href="mailto:info@bridge-interactive.com"
+                        style="color: #4F46E5; text-decoration: none; font-weight: 500;">info@bridge-interactive.com</a>
+                </p>
+                <div class="cta-actions">
+                    <button class="btn-primary btn-large" onclick="openModal('trial')">Start Your Free Trial</button>
+                    <button class="btn-outline btn-large" onclick="openModal('demo')">Schedule a Demo</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Bridge Interactive</h3>
+                    <p>Bridging complexity with simplicity</p>
+                    <p style="margin-top: 0.5rem;"><a href="mailto:info@bridge-interactive.com"
+                            style="color: #4F46E5; text-decoration: none;">info@bridge-interactive.com</a></p>
+                </div>
+                <div class="footer-links">
+                    <div class="link-group">
+                        <h4>Product</h4>
+                        <a href="#products">AI-Powered Agile Management</a>
+                        <a href="#contact">Start Free Trial</a>
+                    </div>
+                    <div class="link-group">
+                        <h4>Company</h4>
+                        <a href="#about">About</a>
+                        <a href="#contact">Contact</a>
+                    </div>
+                    <div class="link-group">
+                        <h4>Legal</h4>
+                        <a href="pages/privacy.html">Privacy Policy</a>
+                        <a href="pages/terms.html">Terms of Service</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Bridge Interactive. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="pages/privacy.html">Privacy Policy</a>
+                    <a href="pages/terms.html">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Contact Modal -->
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Get Started with Bridge Interactive</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="modalDescription">Tell us about your team and we'll get you set up with Bridge Interactive.</p>
+                <p style="font-size: 0.9em; color: #666; margin-bottom: 1.5rem;">Reach us directly at <a
+                        href="mailto:info@bridge-interactive.com"
+                        style="color: #4F46E5; text-decoration: none;">info@bridge-interactive.com</a></p>
+                <form id="contactForm" onsubmit="submitForm(event)">
+                    <div class="form-group">
+                        <label for="fullName">Full Name *</label>
+                        <input type="text" id="fullName" name="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="company">Company Name *</label>
+                        <input type="text" id="company" name="company" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="role">Your Role</label>
+                        <select id="role" name="role">
+                            <option value="">Select your role</option>
+                            <option value="Product Manager">Product Manager</option>
+                            <option value="Engineering Manager">Engineering Manager</option>
+                            <option value="Scrum Master">Scrum Master</option>
+                            <option value="Developer">Developer</option>
+                            <option value="CTO">CTO</option>
+                            <option value="CEO">CEO</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="teamSize">Team Size</label>
+                        <select id="teamSize" name="teamSize">
+                            <option value="">Select team size</option>
+                            <option value="1-5">1-5 people</option>
+                            <option value="6-15">6-15 people</option>
+                            <option value="16-50">16-50 people</option>
+                            <option value="51-100">51-100 people</option>
+                            <option value="100+">100+ people</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Tell us about your current challenges (optional)</label>
+                        <textarea id="message" name="message" rows="4"
+                            placeholder="What agile management challenges is your team facing?"></textarea>
+                    </div>
+                    <div class="form-group" id="demoSpecific" style="display: none;">
+                        <label for="preferredTime">Preferred Demo Time</label>
+                        <select id="preferredTime" name="preferredTime">
+                            <option value="">Select preferred time</option>
+                            <option value="Morning (9AM-12PM)">Morning (9AM-12PM)</option>
+                            <option value="Afternoon (12PM-5PM)">Afternoon (12PM-5PM)</option>
+                            <option value="Evening (5PM-8PM)">Evening (5PM-8PM)</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn-primary" id="submitBtn">
+                            <span id="submitText">Send Request</span>
+                            <span id="submitLoader" style="display: none;">
+                                <i class="fas fa-spinner fa-spin"></i> Sending...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>
