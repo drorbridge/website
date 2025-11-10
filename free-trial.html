@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bridge Interactive - Start Your Free Trial</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .signup-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+
+        .signup-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .signup-header h1 {
+            font-size: 2.5rem;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .signup-header p {
+            font-size: 1.1rem;
+            color: #6b7280;
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3rem;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-number {
+            background-color: #4f46e5;
+            color: white;
+        }
+
+        .step.inactive .step-number {
+            background-color: #e5e7eb;
+            color: #9ca3af;
+        }
+
+        .step-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        /* Messages */
+        .message {
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .message.success {
+            background-color: #ecfdf5;
+            border: 1px solid #86efac;
+            color: #166534;
+        }
+
+        .message.error {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .message svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* Form Styles */
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .form-section h2 {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .required::after {
+            content: " *";
+            color: #ef4444;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            background-color: #f9fafb;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: #f0f4ff;
+            padding: 1rem;
+            border-radius: 0.75rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        /* Button Styles */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: #4f46e5;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #4338ca;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 2px solid #e5e7eb;
+            color: #374151;
+            flex: 1;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #f9fafb;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .footer-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .footer-link a {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .footer-link a:hover {
+            color: #4338ca;
+        }
+
+        /* Verification Modal */
+        .verification-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .verification-modal.show {
+            display: flex;
+        }
+
+        .verification-content {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .verification-icon {
+            width: 64px;
+            height: 64px;
+            background-color: #f0f4ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: #4f46e5;
+        }
+
+        .verification-content h2 {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .verification-content p {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+
+        .verification-input {
+            font-size: 1.5rem;
+            letter-spacing: 0.25rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .test-code {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-bottom: 1rem;
+        }
+
+        /* Trust Indicators */
+        .trust-indicators {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .trust-item strong {
+            display: block;
+            color: #4f46e5;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        @media (max-width: 640px) {
+            .signup-container {
+                padding: 1.5rem;
+            }
+
+            .signup-header h1 {
+                font-size: 2rem;
+            }
+
+            .trust-indicators {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="signup-container">
+        <!-- Header -->
+        <div class="signup-header">
+            <h1>Start Your Free Trial</h1>
+            <p>Join teams already using Bridge Interactive</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="progress-steps" id="progressSteps">
+            <div class="step active">
+                <div class="step-number">1</div>
+                <div class="step-label">Your Info</div>
+            </div>
+            <div class="step inactive">
+                <div class="step-number">2</div>
+                <div class="step-label">Company Info</div>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div id="messageBox" class="message" style="display: none;"></div>
+
+        <!-- Form -->
+        <form id="signupForm">
+            <!-- Step 1: Personal Information -->
+            <div class="form-section active" id="step1">
+                <h2>Your Information</h2>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required">First Name</label>
+                        <input type="text" name="firstName" placeholder="John" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Last Name</label>
+                        <input type="text" name="lastName" placeholder="Doe" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="required">Email Address</label>
+                    <input type="email" name="email" placeholder="you@company.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" name="phoneNumber" placeholder="+14155550123">
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="marketingConsent" name="marketingConsent">
+                    <label for="marketingConsent">I'd like to receive updates and news from Bridge Interactive</label>
+                </div>
+            </div>
+
+            <!-- Step 2: Company Information -->
+            <div class="form-section" id="step2">
+                <h2>Company Information</h2>
+
+                <div class="form-group">
+                    <label class="required">Company Name</label>
+                    <input type="text" name="companyName" placeholder="Acme Corp" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="required">Customer ID</label>
+                    <input type="text" name="customId" placeholder="e.g., client-4235" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required">Country Code</label>
+                        <input type="text" name="countryCode" placeholder="US" maxlength="2" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">City</label>
+                        <input type="text" name="city" placeholder="San Francisco" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required">Postal Code</label>
+                        <input type="text" name="postalCode" placeholder="94107" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Region/State</label>
+                        <input type="text" name="state" placeholder="CA">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Trial Period</label>
+                        <select name="trialDays">
+                            <option value="30">30 days</option>
+                            <option value="60">60 days</option>
+                            <option value="90">90 days</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Currency</label>
+                        <select name="currencyCode">
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                            <option value="JPY">JPY</option>
+                            <option value="AUD">AUD</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" id="backBtn" class="btn-secondary" style="display: none;">
+                    <i class="fas fa-chevron-left"></i> Back
+                </button>
+                <button type="button" id="nextBtn" class="btn-primary">Next Step</button>
+            </div>
+
+            <div class="footer-link">
+                Already have an account? <a href="/">Sign in</a>
+            </div>
+        </form>
+
+        <!-- Trust Indicators -->
+        <div class="trust-indicators">
+            <div class="trust-item">
+                <strong>30 days</strong>
+                Free trial, credit card required
+            </div>
+            <div class="trust-item">
+                <strong>SSL Secure</strong>
+                Your data is encrypted & safe
+            </div>
+            <div class="trust-item">
+                <strong>24/7 Support</strong>
+                Dedicated support team ready
+            </div>
+        </div>
+    </div>
+
+    <!-- Verification Modal -->
+    <div class="verification-modal" id="verificationModal">
+        <div class="verification-content">
+            <div class="verification-icon">
+                <i class="fas fa-check-circle" style="font-size: 2rem;"></i>
+            </div>
+            <h2>Verify Your Email</h2>
+            <p id="verificationEmail"></p>
+
+            <div id="verificationMessage" class="message" style="display: none;"></div>
+
+            <div class="form-group">
+                <label>Verification Code</label>
+                <input type="text" id="verificationCode" class="verification-input" placeholder="000000"
+                    maxlength="6" style="text-transform: uppercase;">
+            </div>
+            <p class="test-code">(Test code: 123456)</p>
+
+            <div class="form-actions">
+                <button type="button" id="verifyBtn" class="btn-primary">
+                    <i class="fas fa-check"></i> Verify & Create Account
+                </button>
+            </div>
+
+            <button type="button" id="resendBtn" class="btn-secondary" style="width: 100%; margin-top: 1rem;">
+                <i class="fas fa-redo"></i> Didn't receive the code? Resend
+            </button>
+
+            <button type="button" id="backToSignupBtn" class="btn-secondary"
+                style="width: 100%; margin-top: 0.5rem;">
+                <i class="fas fa-arrow-left"></i> Back to Sign Up
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // State Management
+        let currentStep = 1;
+        let formDataStore = {
+            firstName: '',
+            lastName: '',
+            email: '',
+            phoneNumber: '',
+            marketingConsent: false,
+            companyName: '',
+            customId: '',
+            countryCode: 'US',
+            city: '',
+            postalCode: '',
+            state: '',
+            trialDays: '30',
+            currencyCode: 'USD',
+            billingEmail: '',
+            clientId: '',
+            planId: '',
+            companyNumber: '',
+            taxIdentifier: '',
+            locale: 'en-US',
+        };
+
+        // DOM Elements
+        const form = document.getElementById('signupForm');
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const nextBtn = document.getElementById('nextBtn');
+        const backBtn = document.getElementById('backBtn');
+        const progressSteps = document.getElementById('progressSteps');
+        const messageBox = document.getElementById('messageBox');
+        const verificationModal = document.getElementById('verificationModal');
+        const verificationEmail = document.getElementById('verificationEmail');
+        const verificationCode = document.getElementById('verificationCode');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const resendBtn = document.getElementById('resendBtn');
+        const backToSignupBtn = document.getElementById('backToSignupBtn');
+        const verificationMessage = document.getElementById('verificationMessage');
+
+        // Event Listeners
+        nextBtn.addEventListener('click', handleNext);
+        backBtn.addEventListener('click', handleBack);
+        verifyBtn.addEventListener('click', handleVerify);
+        resendBtn.addEventListener('click', handleResend);
+        backToSignupBtn.addEventListener('click', handleBackToSignup);
+
+        // Helper Functions
+        function showMessage(text, type = 'success') {
+            messageBox.innerHTML = `
+                ${type === 'success'
+                    ? '<i class="fas fa-check-circle"></i>'
+                    : '<i class="fas fa-exclamation-circle"></i>'}
+                <span>${text}</span>
+            `;
+            messageBox.className = `message ${type}`;
+            messageBox.style.display = 'flex';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function hideMessage() {
+            messageBox.style.display = 'none';
+        }
+
+        function toTitleCase(str) {
+            return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+        }
+
+        function getFormData() {
+            const formElements = form.querySelectorAll('input, select');
+            const data = {};
+            formElements.forEach(el => {
+                if (el.type === 'checkbox') {
+                    data[el.name] = el.checked;
+                } else {
+                    data[el.name] = el.value;
+                }
+            });
+            return data;
+        }
+
+        function validateStep(step) {
+            hideMessage();
+            const data = getFormData();
+
+            if (step === 1) {
+                if (!data.firstName.trim()) {
+                    showMessage('First name is required', 'error');
+                    return false;
+                }
+                if (!data.lastName.trim()) {
+                    showMessage('Last name is required', 'error');
+                    return false;
+                }
+                if (!data.email.trim()) {
+                    showMessage('Email is required', 'error');
+                    return false;
+                }
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(data.email)) {
+                    showMessage('Please enter a valid email address', 'error');
+                    return false;
+                }
+            } else if (step === 2) {
+                if (!data.companyName.trim()) {
+                    showMessage('Company name is required', 'error');
+                    return false;
+                }
+                if (!data.customId.trim()) {
+                    showMessage('Customer ID is required', 'error');
+                    return false;
+                }
+                if (!data.countryCode.trim()) {
+                    showMessage('Country code is required', 'error');
+                    return false;
+                }
+                if (!data.city.trim()) {
+                    showMessage('City is required', 'error');
+                    return false;
+                }
+                if (!data.postalCode.trim()) {
+                    showMessage('Postal code is required', 'error');
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        function updateStep(stepNumber) {
+            currentStep = stepNumber;
+
+            // Update form sections
+            step1.classList.toggle('active', stepNumber === 1);
+            step2.classList.toggle('active', stepNumber === 2);
+
+            // Update buttons
+            backBtn.style.display = stepNumber === 2 ? 'flex' : 'none';
+            nextBtn.textContent = stepNumber === 1
+                ? '<i class="fas fa-arrow-right"></i> Next Step'
+                : '<i class="fas fa-paper-plane"></i> Register & Verify';
+            nextBtn.innerHTML = stepNumber === 1
+                ? '<i class="fas fa-arrow-right"></i> Next Step'
+                : '<i class="fas fa-paper-plane"></i> Register & Verify';
+
+            // Update progress
+            const steps = progressSteps.querySelectorAll('.step');
+            steps.forEach((step, index) => {
+                if (index + 1 <= stepNumber) {
+                    step.classList.add('active');
+                    step.classList.remove('inactive');
+                } else {
+                    step.classList.remove('active');
+                    step.classList.add('inactive');
+                }
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function handleNext() {
+            if (currentStep === 1) {
+                if (validateStep(1)) {
+                    updateStep(2);
+                }
+            } else if (currentStep === 2) {
+                if (validateStep(2)) {
+                    handleSubmit();
+                }
+            }
+        }
+
+        function handleBack() {
+            updateStep(1);
+            hideMessage();
+        }
+
+        function handleSubmit() {
+            nextBtn.disabled = true;
+            nextBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+
+            // Simulate API call
+            setTimeout(() => {
+                const data = getFormData();
+                formDataStore = { ...formDataStore, ...data };
+
+                showMessage('Verification code sent to your email!', 'success');
+
+                // Show verification modal
+                verificationEmail.textContent = `We've sent a verification code to ${data.email}`;
+                verificationModal.classList.add('show');
+
+                nextBtn.disabled = false;
+                nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
+            }, 1500);
+        }
+
+        function handleVerify() {
+            if (!verificationCode.value.trim()) {
+                showVerificationMessage('Please enter the verification code', 'error');
+                return;
+            }
+
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+
+            // Simulate verification
+            setTimeout(() => {
+                if (verificationCode.value === '123456') {
+                    // Success - prepare payload for backoffice
+                    const payload = {
+                        ...formDataStore,
+                        clientId: `cli_${Date.now()}`,
+                        firstName: toTitleCase(formDataStore.firstName),
+                        lastName: toTitleCase(formDataStore.lastName),
+                        billingEmail: formDataStore.email,
+                        trialDays: parseInt(formDataStore.trialDays),
+                    };
+
+                    console.log('Account created with payload:', payload);
+
+                    showVerificationMessage('Account created successfully! Redirecting...', 'success');
+
+                    // Here you would send the payload to your backoffice API
+                    // await sendToBackoffice(payload);
+
+                    setTimeout(() => {
+                        // Redirect after success
+                        window.location.href = '/dashboard';
+                    }, 2000);
+                } else {
+                    showVerificationMessage('Invalid verification code. Please try again.', 'error');
+                    verifyBtn.disabled = false;
+                    verifyBtn.innerHTML = '<i class="fas fa-check"></i> Verify & Create Account';
+                }
+            }, 1000);
+        }
+
+        function handleResend() {
+            resendBtn.disabled = true;
+            resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+            setTimeout(() => {
+                showVerificationMessage('Verification code resent to your email!', 'success');
+                verificationCode.value = '';
+                resendBtn.disabled = false;
+                resendBtn.innerHTML = '<i class="fas fa-redo"></i> Didn\'t receive the code? Resend';
+            }, 1000);
+        }
+
+        function handleBackToSignup() {
+            verificationModal.classList.remove('show');
+            verificationCode.value = '';
+            hideVerificationMessage();
+            updateStep(1);
+            form.reset();
+        }
+
+        function showVerificationMessage(text, type = 'success') {
+            verificationMessage.innerHTML = `
+                ${type === 'success'
+                    ? '<i class="fas fa-check-circle"></i>'
+                    : '<i class="fas fa-exclamation-circle"></i>'}
+                <span>${text}</span>
+            `;
+            verificationMessage.className = `message ${type}`;
+            verificationMessage.style.display = 'flex';
+        }
+
+        function hideVerificationMessage() {
+            verificationMessage.style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>
