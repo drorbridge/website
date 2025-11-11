@@ -538,8 +538,13 @@
                     We use reCAPTCHA to protect our form from abuse. This step is powered by Google.
                 </p>
                 <div class="recaptcha-container">
-                    <div class="g-recaptcha" data-sitekey="6LePEAksAAAAAEGD_dFaus30i1QsGbRobKLLui6C"
-                        data-callback="onRecaptchaSuccess"></div>
+                    <button type="button" id="executeRecaptcha" class="btn-primary" style="width: 100%;">
+                        <i class="fas fa-shield-alt"></i> Verify with reCAPTCHA
+                    </button>
+                </div>
+                <div id="recaptcha-status"
+                    style="text-align: center; color: #4f46e5; font-weight: bold; margin-top: 1rem; display: none;">
+                    ✅ Verification complete! You can now register.
                 </div>
                 <p class="recaptcha-info">
                     This site is protected by reCAPTCHA and the Google
@@ -931,12 +936,21 @@
             this.disabled = true;
             this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
 
-            grecaptcha.execute('6LePEAksAAAAAEGD_dFaus30i1QsGbRobKLLui6C', { action: 'submit' }).then(function (token) {
-                recaptchaToken = token;
-                document.getElementById('recaptcha-status').textContent = '✅ Verification complete!';
-                document.getElementById('executeRecaptcha').style.display = 'none';
-                console.log('reCAPTCHA token:', token);
-            });
+            // Execute reCAPTCHA v3
+            grecaptcha.execute('6LePEAksAAAAAEGD_dFaus30i1QsGbRobKLLui6C', { action: 'submit' })
+                .then(function (token) {
+                    console.log('reCAPTCHA token obtained:', token);
+                    recaptchaToken = token;
+
+                    // Hide button and show success message
+                    document.getElementById('executeRecaptcha').style.display = 'none';
+                    document.getElementById('recaptcha-status').style.display = 'block';
+                })
+                .catch(function (error) {
+                    console.error('reCAPTCHA error:', error);
+                    document.getElementById('executeRecaptcha').disabled = false;
+                    document.getElementById('executeRecaptcha').innerHTML = '<i class="fas fa-shield-alt"></i> Verify with reCAPTCHA';
+                });
         });
     </script>
 </body>
