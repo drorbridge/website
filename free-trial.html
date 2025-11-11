@@ -538,7 +538,11 @@
                     We use reCAPTCHA to protect our form from abuse. This step is powered by Google.
                 </p>
                 <div class="recaptcha-container">
-                        <div class="g-recaptcha" data-sitekey="6LePEAksAAAAAEGD_dFaus30i1QsGbRobKLLui6C" data-callback="onRecaptchaSuccess"></div>
+                    <button type="button" id="executeRecaptcha" class="btn-primary"
+                        style="width: 100%; margin-bottom: 1rem;">
+                        <i class="fas fa-shield-alt"></i> Verify with reCAPTCHA
+                    </button>
+                    <div id="recaptcha-status" style="text-align: center; color: #4f46e5; font-weight: bold;"></div>
                 </div>
                 <p class="recaptcha-info">
                     This site is protected by reCAPTCHA and the Google
@@ -590,8 +594,8 @@
 
             <div class="form-group">
                 <label>Verification Code</label>
-                <input type="text" id="verificationCode" class="verification-input" placeholder="000000"
-                    maxlength="6" style="text-transform: uppercase;">
+                <input type="text" id="verificationCode" class="verification-input" placeholder="000000" maxlength="6"
+                    style="text-transform: uppercase;">
             </div>
             <p class="test-code">(Test code: 123456)</p>
 
@@ -605,8 +609,7 @@
                 <i class="fas fa-redo"></i> Didn't receive the code? Resend
             </button>
 
-            <button type="button" id="backToSignupBtn" class="btn-secondary"
-                style="width: 100%; margin-top: 0.5rem;">
+            <button type="button" id="backToSignupBtn" class="btn-secondary" style="width: 100%; margin-top: 0.5rem;">
                 <i class="fas fa-arrow-left"></i> Back to Sign Up
             </button>
         </div>
@@ -823,29 +826,29 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             })
-            .then(res => res.json())
-            .then(result => {
-                if (result.success) {
-                    showMessage('Registration submitted! Check your email for confirmation.', 'success');
-                    setTimeout(() => {
-                        window.location.href = '/';
-                    }, 3000);
-                } else {
-                    showMessage(result.message || 'Verification failed. Please try again.', 'error');
+                .then(res => res.json())
+                .then(result => {
+                    if (result.success) {
+                        showMessage('Registration submitted! Check your email for confirmation.', 'success');
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 3000);
+                    } else {
+                        showMessage(result.message || 'Verification failed. Please try again.', 'error');
+                        nextBtn.disabled = false;
+                        nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
+                        grecaptcha.reset();
+                        recaptchaToken = null;
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    showMessage('An error occurred. Please try again.', 'error');
                     nextBtn.disabled = false;
                     nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
                     grecaptcha.reset();
                     recaptchaToken = null;
-                }
-            })
-            .catch(err => {
-                console.error('Error:', err);
-                showMessage('An error occurred. Please try again.', 'error');
-                nextBtn.disabled = false;
-                nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
-                grecaptcha.reset();
-                recaptchaToken = null;
-            });
+                });
         }
 
         function handleVerify() {
@@ -923,6 +926,21 @@
         function hideVerificationMessage() {
             verificationMessage.style.display = 'none';
         }
+
+
+        // reCAPTCHA v3 execution
+document.getElementById('executeRecaptcha').addEventListener('click', function(e) {
+    e.preventDefault();
+    this.disabled = true;
+    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+    
+    grecaptcha.execute('6LePEAksAAAAAEGD_dFaus30i1QsGbRobKLLui6C', {action: 'submit'}).then(function(token) {
+        recaptchaToken = token;
+        document.getElementById('recaptcha-status').textContent = '✅ Verification complete!';
+        document.getElementById('executeRecaptcha').style.display = 'none';
+        console.log('reCAPTCHA token:', token);
+    });
+});
     </script>
 </body>
 
