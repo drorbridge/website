@@ -619,348 +619,516 @@
 
     <script>
         // State Management
-let currentStep = 1;
-let recaptchaToken = null;
-let formDataStore = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    phoneNumber: '',
-    marketingConsent: false,
-    companyName: '',
-    customId: '',
-    countryCode: 'US',
-    city: '',
-    postalCode: '',
-    state: '',
-    trialDays: '30',
-    currencyCode: 'USD',
-    locale: 'en-US',
-};
+        let currentStep = 1;
+        let recaptchaToken = null;
+        let formDataStore = {
+            firstName: '',
+            lastName: '',
+            email: '',
+            phoneNumber: '',
+            marketingConsent: false,
+            companyName: '',
+            customId: '',
+            countryCode: 'US',
+            city: '',
+            postalCode: '',
+            state: '',
+            trialDays: '30',
+            currencyCode: 'USD',
+            billingEmail: '',
+            clientId: '',
+            planId: '',
+            companyNumber: '',
+            taxIdentifier: '',
+            locale: 'en-US',
+        };
 
-// DOM Elements
-const form = document.getElementById('signupForm');
-const step1 = document.getElementById('step1');
-const step2 = document.getElementById('step2');
-const step3 = document.getElementById('step3'); // Added
-const nextBtn = document.getElementById('nextBtn');
-const backBtn = document.getElementById('backBtn');
-const progressSteps = document.getElementById('progressSteps');
-const messageBox = document.getElementById('messageBox');
-const verificationModal = document.getElementById('verificationModal');
-const verificationEmail = document.getElementById('verificationEmail');
-const verificationCode = document.getElementById('verificationCode');
-const verifyBtn = document.getElementById('verifyBtn');
-const resendBtn = document.getElementById('resendBtn');
-const backToSignupBtn = document.getElementById('backToSignupBtn');
-const verificationMessage = document.getElementById('verificationMessage');
-const executeRecaptchaBtn = document.getElementById('executeRecaptcha');
-const recaptchaStatus = document.getElementById('recaptcha-status');
+        // DOM Elements
+        const form = document.getElementById('signupForm');
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const nextBtn = document.getElementById('nextBtn');
+        const backBtn = document.getElementById('backBtn');
+        const progressSteps = document.getElementById('progressSteps');
+        const messageBox = document.getElementById('messageBox');
+        const verificationModal = document.getElementById('verificationModal');
+        const verificationEmail = document.getElementById('verificationEmail');
+        const verificationCode = document.getElementById('verificationCode');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const resendBtn = document.getElementById('resendBtn');
+        const backToSignupBtn = document.getElementById('backToSignupBtn');
+        const verificationMessage = document.getElementById('verificationMessage');
 
-// --- Configuration ---
-// These should match the values in your HTML and AWS setup
-const RECAPTCHA_SITE_KEY = "6LePEAksAAAAAEGD_dFaus30i1QsGbRobKLLui6C"; 
-const LAMBDA_ENDPOINT = "https://nnfsrfwxld.execute-api.eu-north-1.amazonaws.com/default"; 
+        // Event Listeners
+        nextBtn.addEventListener('click', handleNext);
+        backBtn.addEventListener('click', handleBack);
+        verifyBtn.addEventListener('click', handleVerify);
+        resendBtn.addEventListener('click', handleResend);
+        backToSignupBtn.addEventListener('click', handleBackToSignup);
 
-// Event Listeners
-nextBtn.addEventListener('click', handleNext);
-backBtn.addEventListener('click', handleBack);
-verifyBtn.addEventListener('click', handleVerify);
-resendBtn.addEventListener('click', handleResend);
-backToSignupBtn.addEventListener('click', handleBackToSignup);
-executeRecaptchaBtn.addEventListener('click', executeRecaptcha); // Manual reCAPTCHA trigger
-
-// --- Helper Functions ---
-function showMessage(text, type = 'success', target = messageBox) {
-    target.innerHTML = `
-        ${type === 'success'
-            ? '<i class="fas fa-check-circle"></i>'
-            : '<i class="fas fa-exclamation-circle"></i>'}
-        <span>${text}</span>
-    `;
-    target.className = `message ${type}`;
-    target.style.display = 'flex';
-    if (target === messageBox) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-}
-
-function hideMessage(target = messageBox) {
-    target.style.display = 'none';
-}
-
-function toTitleCase(str) {
-    return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-function getFormData() {
-    const formElements = form.querySelectorAll('input, select');
-    const data = {};
-    formElements.forEach(el => {
-        if (el.type === 'checkbox') {
-            data[el.name] = el.checked;
-        } else {
-            data[el.name] = el.value;
+        // reCAPTCHA Callback
+        function onRecaptchaSuccess(token) {
+            recaptchaToken = token;
+            console.log('reCAPTCHA token received');
         }
-    });
-    return data;
-}
 
-function validateStep(step) {
-    hideMessage();
-    const currentStepDiv = document.getElementById(`step${step}`);
-    const requiredInputs = currentStepDiv.querySelectorAll('input[required], select[required]');
-    
-    for (const input of requiredInputs) {
-        if (!input.value.trim()) {
-            const labelText = input.previousElementSibling ? input.previousElementSibling.textContent.replace('*', '').trim() : input.name;
-            showMessage(`The field **${labelText}** is required.`, 'error');
-            input.focus();
-            return false;
+        // Helper Functions
+        function showMessage(text, type = 'success') {
+            messageBox.innerHTML = `
+                ${type === 'success'
+                    ? '<i class="fas fa-check-circle"></i>'
+                    : '<i class="fas fa-exclamation-circle"></i>'}
+                <span>${text}</span>
+            `;
+            messageBox.className = `message ${type}`;
+            messageBox.style.display = 'flex';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-    }
 
-    if (step === 1) {
-        const emailInput = currentStepDiv.querySelector('input[name="email"]');
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (emailInput && !emailRegex.test(emailInput.value)) {
-            showMessage('Please enter a valid email address.', 'error');
-            emailInput.focus();
-            return false;
+        function hideMessage() {
+            messageBox.style.display = 'none';
         }
-    }
 
-    return true;
-}
-
-function updateStep(stepNumber) {
-    currentStep = stepNumber;
-
-    // Update form sections
-    step1.classList.toggle('active', stepNumber === 1);
-    step2.classList.toggle('active', stepNumber === 2);
-    step3.classList.toggle('active', stepNumber === 3);
-
-    // Update buttons
-    backBtn.style.display = stepNumber > 1 ? 'flex' : 'none';
-    if (stepNumber === 1 || stepNumber === 2) {
-        nextBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Next Step';
-        nextBtn.disabled = false;
-    } else if (stepNumber === 3) {
-        nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
-        // Disable submit button until reCAPTCHA is executed
-        nextBtn.disabled = !recaptchaToken; 
-    }
-
-    // Update progress bar
-    const steps = progressSteps.querySelectorAll('.step');
-    steps.forEach((step, index) => {
-        step.classList.toggle('active', index + 1 <= stepNumber);
-        step.classList.toggle('inactive', index + 1 > stepNumber);
-    });
-
-    if (stepNumber === 3 && !recaptchaToken) {
-        // Automatically trigger reCAPTCHA V3 when landing on step 3
-        executeRecaptcha();
-    }
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// --- reCAPTCHA v3 Execution ---
-function executeRecaptcha() {
-    if (typeof grecaptcha !== 'undefined') {
-        nextBtn.disabled = true;
-        executeRecaptchaBtn.disabled = true;
-        executeRecaptchaBtn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Verifying...';
-        recaptchaStatus.style.display = 'none';
-
-        grecaptcha.ready(function() {
-            grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'submit_trial' })
-                .then(function(token) {
-                    recaptchaToken = token;
-                    console.log('reCAPTCHA v3 token received:', recaptchaToken);
-                    executeRecaptchaBtn.style.display = 'none';
-                    recaptchaStatus.style.display = 'block';
-                    nextBtn.disabled = false; // Enable submit button
-                    nextBtn.focus();
-                })
-                .catch(function(error) {
-                    console.error('reCAPTCHA execution error:', error);
-                    showMessage('Security verification failed. Please try again.', 'error');
-                    executeRecaptchaBtn.innerHTML = '<i class="fas fa-redo"></i> Try Again';
-                    executeRecaptchaBtn.disabled = false;
-                    nextBtn.disabled = true;
-                });
-        });
-    } else {
-        console.error("reCAPTCHA script not loaded.");
-        showMessage('reCAPTCHA script failed to load. Please check your connection.', 'error');
-        nextBtn.disabled = true;
-    }
-}
-
-// --- Step Handlers ---
-function handleNext() {
-    if (currentStep === 1) {
-        if (validateStep(1)) {
-            // Save step 1 data
-            Object.assign(formDataStore, getFormData());
-            updateStep(2);
+        function toTitleCase(str) {
+            return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
         }
-    } else if (currentStep === 2) {
-        if (validateStep(2)) {
-            // Save step 2 data
-            Object.assign(formDataStore, getFormData());
-            updateStep(3);
+
+        function getFormData() {
+            const formElements = form.querySelectorAll('input, select');
+            const data = {};
+            formElements.forEach(el => {
+                if (el.type === 'checkbox') {
+                    data[el.name] = el.checked;
+                } else {
+                    data[el.name] = el.value;
+                }
+            });
+            return data;
         }
-    } else if (currentStep === 3) {
-        if (!recaptchaToken) {
-            showMessage('Please complete the security verification first.', 'error');
-            executeRecaptcha();
-            return;
+
+        function validateStep(step) {
+            hideMessage();
+            const data = getFormData();
+
+            if (step === 1) {
+                if (!data.firstName.trim()) {
+                    showMessage('First name is required', 'error');
+                    return false;
+                }
+                if (!data.lastName.trim()) {
+                    showMessage('Last name is required', 'error');
+                    return false;
+                }
+                if (!data.email.trim()) {
+                    showMessage('Email is required', 'error');
+                    return false;
+                }
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(data.email)) {
+                    showMessage('Please enter a valid email address', 'error');
+                    return false;
+                }
+            } else if (step === 2) {
+                if (!data.companyName.trim()) {
+                    showMessage('Company name is required', 'error');
+                    return false;
+                }
+                if (!data.customId.trim()) {
+                    showMessage('Customer ID is required', 'error');
+                    return false;
+                }
+                if (!data.countryCode.trim()) {
+                    showMessage('Country code is required', 'error');
+                    return false;
+                }
+                if (!data.city.trim()) {
+                    showMessage('City is required', 'error');
+                    return false;
+                }
+                if (!data.postalCode.trim()) {
+                    showMessage('Postal code is required', 'error');
+                    return false;
+                }
+            }
+
+            return true;
         }
-        handleSubmit();
-    }
-}
 
-function handleBack() {
-    if (currentStep > 1) {
-        updateStep(currentStep - 1); 
-        hideMessage();
-    }
-}
+        function updateStep(stepNumber) {
+            currentStep = stepNumber;
 
-// --- Submission Handler ---
-async function handleSubmit() {
-    nextBtn.disabled = true;
-    nextBtn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Registering...';
-    hideMessage();
-    
-    // Collect final data
-    const finalData = {
-        ...getFormData(),
-        captchaToken: recaptchaToken, 
-    };
-    
-    // Ensure names are properly formatted before sending (optional business logic)
-    finalData.firstName = toTitleCase(finalData.firstName);
-    finalData.lastName = toTitleCase(finalData.lastName);
+            // Update form sections
+            step1.classList.toggle('active', stepNumber === 1);
+            step2.classList.toggle('active', stepNumber === 2);
+            document.getElementById('step3').classList.toggle('active', stepNumber === 3);
 
-    try {
-        const response = await fetch(LAMBDA_ENDPOINT, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(finalData),
-        });
+            // Update buttons
+            backBtn.style.display = stepNumber > 1 ? 'flex' : 'none';
+            if (stepNumber === 1) {
+                nextBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Next Step';
+            } else if (stepNumber === 2) {
+                nextBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Next Step';
+            } else if (stepNumber === 3) {
+                nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
+            }
 
-        // The response might be successful (200) but contain an application error.
-        // We parse the JSON to check the internal 'success' flag.
-        const result = await response.json();
+            // Update progress
+            const steps = progressSteps.querySelectorAll('.step');
+            steps.forEach((step, index) => {
+                if (index + 1 <= stepNumber) {
+                    step.classList.add('active');
+                    step.classList.remove('inactive');
+                } else {
+                    step.classList.remove('active');
+                    step.classList.add('inactive');
+                }
+            });
 
-        if (result.success) {
-            // Success in submission, now trigger email verification modal
-            // Update formDataStore with any server-returned data (e.g., a client ID)
-            Object.assign(formDataStore, result.data || {}); 
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
-            verificationEmail.innerHTML = `We've sent a 6-digit code to **${formDataStore.email}**`;
-            verificationModal.classList.add('show');
-            form.style.display = 'none'; // Hide the signup form
-            hideMessage(); // Hide form-level message box
-            
-        } else {
-            // Handle specific application errors, like ReCAPTCHA score too low
-            if (result.message && typeof result.message === 'string' && result.message.includes("reCAPTCHA")) {
-                showMessage('⚠️ Security check failed. Please try again. (Low reCAPTCHA score)', 'error');
-                recaptchaToken = null;
-                recaptchaStatus.style.display = 'none';
-                executeRecaptchaBtn.style.display = 'flex';
-                executeRecaptchaBtn.innerHTML = '<i class="fas fa-shield-alt"></i> Verify with reCAPTCHA';
-                nextBtn.disabled = true;
-            } else {
-                showMessage('❌ Submission failed: ' + (result.message || 'An unknown error occurred.'), 'error');
+        function handleNext() {
+            if (currentStep === 1) {
+                if (validateStep(1)) {
+                    updateStep(2);
+                }
+            } else if (currentStep === 2) {
+                if (validateStep(2)) {
+                    updateStep(3);
+                }
+            } else if (currentStep === 3) {
+                if (!recaptchaToken) {
+                    showMessage('Please complete the reCAPTCHA verification', 'error');
+                    return;
+                }
+                handleSubmit();
             }
         }
-    } catch (error) {
-        console.error('Submission error:', error);
-        // This handles network errors or JSON parsing errors
-        showMessage('An unexpected error occurred. Please check your network connection.', 'error');
-    } finally {
-        nextBtn.disabled = false;
-        nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
-    }
-}
 
-// --- Email Verification Modal Handlers (MOCK IMPLEMENTATION) ---
+        function handleBack() {
+            updateStep(1);
+            hideMessage();
+        }
 
-function handleVerify() {
-    const code = verificationCode.value.trim();
-    hideMessage(verificationMessage);
-    
-    if (!code) {
-        showMessage('Please enter the verification code', 'error', verificationMessage);
-        return;
-    }
+        function handleSubmit() {
+            nextBtn.disabled = true;
+            nextBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
 
-    verifyBtn.disabled = true;
-    verifyBtn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Verifying...';
+            const data = getFormData();
+            formDataStore = { ...formDataStore, ...data };
 
-    // Simulate verification (REPLACE WITH REAL API CALL)
-    setTimeout(() => {
-        if (code === '123456') { // Test code check
-            
-            // --- Final Account Creation Logic (Mocking successful backoffice API call) ---
-            const finalPayload = {
+            const payload = {
                 ...formDataStore,
-                clientId: `cli_${Date.now()}`, // Generate client ID locally or use server-provided ID
-                billingEmail: formDataStore.email,
-                trialDays: parseInt(formDataStore.trialDays),
+                captchaToken: recaptchaToken
             };
 
-            console.log('Final Account Creation Payload:', finalPayload);
+            // Call your AWS Lambda function
+            fetch('https://nnfsrfwxld.execute-api.eu-north-1.amazonaws.com/default', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+                .then(res => res.json())
+                .then(result => {
+                    if (result.success) {
+                        showMessage('Registration submitted! Check your email for confirmation.', 'success');
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 3000);
+                    } else {
+                        showMessage(result.message || 'Verification failed. Please try again.', 'error');
+                        nextBtn.disabled = false;
+                        nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
+                        grecaptcha.reset();
+                        recaptchaToken = null;
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    showMessage('An error occurred. Please try again.', 'error');
+                    nextBtn.disabled = false;
+                    nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
+                    grecaptcha.reset();
+                    recaptchaToken = null;
+                });
+        }
 
-            showMessage('✅ Account created successfully! Redirecting...', 'success', verificationMessage);
+        function handleVerify() {
+            if (!verificationCode.value.trim()) {
+                showVerificationMessage('Please enter the verification code', 'error');
+                return;
+            }
+
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+
+            // Simulate verification
+            setTimeout(() => {
+                if (verificationCode.value === '123456') {
+                    // Success - prepare payload for backoffice
+                    const payload = {
+                        ...formDataStore,
+                        clientId: `cli_${Date.now()}`,
+                        firstName: toTitleCase(formDataStore.firstName),
+                        lastName: toTitleCase(formDataStore.lastName),
+                        billingEmail: formDataStore.email,
+                        trialDays: parseInt(formDataStore.trialDays),
+                    };
+
+                    console.log('Account created with payload:', payload);
+
+                    showVerificationMessage('Account created successfully! Redirecting...', 'success');
+
+                    // Here you would send the payload to your backoffice API
+                    // await sendToBackoffice(payload);
+
+                    setTimeout(() => {
+                        // Redirect after success
+                        window.location.href = '/dashboard';
+                    }, 2000);
+                } else {
+                    showVerificationMessage('Invalid verification code. Please try again.', 'error');
+                    verifyBtn.disabled = false;
+                    verifyBtn.innerHTML = '<i class="fas fa-check"></i> Verify & Create Account';
+                }
+            }, 1000);
+        }
+
+        function handleResend() {
+            resendBtn.disabled = true;
+            resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
             setTimeout(() => {
-                window.location.href = '/dashboard'; // Redirect after success
-            }, 2000);
-            // --- End Final Logic ---
-
-        } else {
-            showMessage('Invalid verification code. Please try again.', 'error', verificationMessage);
-            verifyBtn.disabled = false;
-            verifyBtn.innerHTML = '<i class="fas fa-check"></i> Verify & Create Account';
+                showVerificationMessage('Verification code resent to your email!', 'success');
+                verificationCode.value = '';
+                resendBtn.disabled = false;
+                resendBtn.innerHTML = '<i class="fas fa-redo"></i> Didn\'t receive the code? Resend';
+            }, 1000);
         }
-    }, 1000);
-}
 
-function handleResend() {
-    resendBtn.disabled = true;
-    resendBtn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Sending...';
-    hideMessage(verificationMessage);
+        function handleBackToSignup() {
+            verificationModal.classList.remove('show');
+            verificationCode.value = '';
+            hideVerificationMessage();
+            updateStep(1);
+            form.reset();
+        }
 
-    // Simulate resending code (REPLACE WITH REAL API CALL)
-    setTimeout(() => {
-        showMessage('Verification code resent to your email!', 'success', verificationMessage);
-        verificationCode.value = '';
-        resendBtn.disabled = false;
-        resendBtn.innerHTML = '<i class="fas fa-redo"></i> Didn\'t receive the code? Resend';
-    }, 1500);
-}
+        function showVerificationMessage(text, type = 'success') {
+            verificationMessage.innerHTML = `
+                ${type === 'success'
+                    ? '<i class="fas fa-check-circle"></i>'
+                    : '<i class="fas fa-exclamation-circle"></i>'}
+                <span>${text}</span>
+            `;
+            verificationMessage.className = `message ${type}`;
+            verificationMessage.style.display = 'flex';
+        }
 
-function handleBackToSignup() {
-    verificationModal.classList.remove('show');
-    verificationCode.value = '';
-    hideMessage(verificationMessage);
-    form.style.display = 'block'; // Show the signup form again
-    updateStep(1);
-    form.reset();
-}
+        function hideVerificationMessage() {
+            verificationMessage.style.display = 'none';
+        }
 
-// --- Initializer ---
-updateStep(1);
+
+        // reCAPTCHA v3 execution
+        // ... (Keep your State Management and DOM Elements variables above this line) ...
+        const step3 = document.getElementById('step3'); // Added Step 3 DOM element
+        const executeRecaptchaBtn = document.getElementById('executeRecaptcha'); // Button on step 3
+        const recaptchaStatus = document.getElementById('recaptcha-status'); // Status indicator on step 3
+        
+        // --- Configuration ---
+        const RECAPTCHA_SITE_KEY = "6LePEAksAAAAAEGD_dFaus30i1QsGbRobKLLui6C"; // Your site key
+        const LAMBDA_ENDPOINT = "https://nnfsrfwxld.execute-api.eu-north-1.amazonaws.com/default"; // <--- CHANGE THIS TO YOUR ACTUAL AWS API GATEWAY ENDPOINT
+
+        // Event Listeners
+        nextBtn.addEventListener('click', handleNext);
+        backBtn.addEventListener('click', handleBack);
+        // Note: The executeRecaptchaBtn is now handled by the g-recaptcha-response
+        
+        // --- Helper Functions (Keep validateStep, toTitleCase, getFormData, showMessage, hideMessage as they are) ---
+
+        function showMessage(text, type = 'success', target = messageBox) {
+            target.innerHTML = `
+                ${type === 'success'
+                    ? '<i class="fas fa-check-circle"></i>'
+                    : '<i class="fas fa-exclamation-circle"></i>'}
+                <span>${text}</span>
+            `;
+            target.className = `message ${type}`;
+            target.style.display = 'flex';
+            if (target === messageBox) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function hideMessage(target = messageBox) {
+            target.style.display = 'none';
+        }
+
+        function updateStep(stepNumber) {
+            currentStep = stepNumber;
+
+            // Update form sections
+            step1.classList.toggle('active', stepNumber === 1);
+            step2.classList.toggle('active', stepNumber === 2);
+            step3.classList.toggle('active', stepNumber === 3); // Use step3 variable
+
+            // Update buttons
+            backBtn.style.display = stepNumber > 1 ? 'flex' : 'none';
+            if (stepNumber === 1 || stepNumber === 2) {
+                nextBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Next Step';
+                nextBtn.disabled = false;
+            } else if (stepNumber === 3) {
+                nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
+                // Initially disable submit button on step 3 until reCAPTCHA is executed
+                nextBtn.disabled = !recaptchaToken; 
+            }
+
+            // Update progress
+            const steps = progressSteps.querySelectorAll('.step');
+            steps.forEach((step, index) => {
+                if (index + 1 <= stepNumber) {
+                    step.classList.add('active');
+                    step.classList.remove('inactive');
+                } else {
+                    step.classList.remove('active');
+                    step.classList.add('inactive');
+                }
+            });
+
+            if (stepNumber === 3 && !recaptchaToken) {
+                // If on step 3 and no token, trigger reCAPTCHA execution for the first time
+                executeRecaptcha();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // --- reCAPTCHA v3 Execution ---
+        function executeRecaptcha() {
+            if (typeof grecaptcha !== 'undefined') {
+                nextBtn.disabled = true;
+                executeRecaptchaBtn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Verifying...';
+                
+                grecaptcha.ready(function() {
+                    grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'submit_trial' })
+                        .then(function(token) {
+                            recaptchaToken = token;
+                            console.log('reCAPTCHA v3 token received:', recaptchaToken);
+                            executeRecaptchaBtn.style.display = 'none';
+                            recaptchaStatus.style.display = 'block';
+                            nextBtn.disabled = false; // Enable submit button
+                            nextBtn.focus();
+                        })
+                        .catch(function(error) {
+                            console.error('reCAPTCHA execution error:', error);
+                            showMessage('Security verification failed. Please try again.', 'error');
+                            executeRecaptchaBtn.innerHTML = '<i class="fas fa-redo"></i> Try Again';
+                            executeRecaptchaBtn.disabled = false;
+                            nextBtn.disabled = true;
+                        });
+                });
+            } else {
+                console.error("reCAPTCHA script not loaded.");
+                showMessage('reCAPTCHA script failed to load. Please check your connection.', 'error');
+            }
+        }
+        
+        // Manual execution if the user clicks the button (less common for v3, but helpful fallback)
+        executeRecaptchaBtn.addEventListener('click', executeRecaptcha);
+
+        // --- Step Handlers ---
+        function handleNext() {
+            if (currentStep === 1) {
+                if (validateStep(1)) {
+                    // Save step 1 data to the store (optional, but good practice)
+                    Object.assign(formDataStore, getFormData());
+                    updateStep(2);
+                }
+            } else if (currentStep === 2) {
+                if (validateStep(2)) {
+                    // Save step 2 data
+                    Object.assign(formDataStore, getFormData());
+                    updateStep(3);
+                }
+            } else if (currentStep === 3) {
+                // This is the submission step
+                if (!recaptchaToken) {
+                    // If the token somehow expired or wasn't generated
+                    showMessage('Please complete the security verification first.', 'error');
+                    executeRecaptcha(); // Try to get a new token
+                    return;
+                }
+                handleSubmit();
+            }
+        }
+
+        function handleBack() {
+            if (currentStep > 1) {
+                // The 'Back' button should take you to the *previous* step, not just step 1
+                updateStep(currentStep - 1); 
+                hideMessage();
+            }
+        }
+
+        // --- Submission Handler ---
+        async function handleSubmit() {
+            nextBtn.disabled = true;
+            nextBtn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Registering...';
+            hideMessage();
+            
+            // Collect final data and add the reCAPTCHA token
+            const finalData = {
+                ...getFormData(),
+                captchaToken: recaptchaToken, 
+            };
+            
+            // Remove the hardcoded test token logic for real submissions:
+            // if (window.location.search.includes('test-mode')) {
+            //     finalData.captchaToken = 'test-token-123';
+            // }
+
+            try {
+                const response = await fetch(LAMBDA_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(finalData),
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showMessage('✅ Success! Your free trial request has been submitted. Check your email for verification!', 'success');
+                    // You might want to hide the form or redirect here
+                    form.style.display = 'none';
+                } else {
+                    // Check for reCAPTCHA failure specifically
+                    if (result.message.includes("reCAPTCHA")) {
+                        showMessage('⚠️ Security check failed. Please try again. (Low reCAPTCHA score)', 'error');
+                        // Reset reCAPTCHA state to force a new execution
+                        recaptchaToken = null;
+                        recaptchaStatus.style.display = 'none';
+                        executeRecaptchaBtn.style.display = 'flex';
+                        executeRecaptchaBtn.innerHTML = '<i class="fas fa-shield-alt"></i> Verify with reCAPTCHA';
+                        nextBtn.disabled = true;
+                    } else {
+                        showMessage('❌ Submission failed: ' + result.message, 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                showMessage('An unexpected error occurred. Please try again later.', 'error');
+            } finally {
+                nextBtn.disabled = false;
+                nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
+            }
+        }
+
+        // --- Initializer ---
+        // Ensure initial button states are correct
+        updateStep(1);
 
         // Placeholder for other handlers (verify, resend, back to signup) if they were fully implemented
         function handleVerify() { /* ... */ }
