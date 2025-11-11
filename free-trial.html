@@ -538,11 +538,8 @@
                     We use reCAPTCHA to protect our form from abuse. This step is powered by Google.
                 </p>
                 <div class="recaptcha-container">
-                    <button type="button" id="executeRecaptcha" class="btn-primary"
-                        style="width: 100%; margin-bottom: 1rem;">
-                        <i class="fas fa-shield-alt"></i> Verify with reCAPTCHA
-                    </button>
-                    <div id="recaptcha-status" style="text-align: center; color: #4f46e5; font-weight: bold;"></div>
+                    <div class="g-recaptcha" data-sitekey="6LePEAksAAAAAEGD_dFaus30i1QsGbRobKLLui6C"
+                        data-callback="onRecaptchaSuccess"></div>
                 </div>
                 <p class="recaptcha-info">
                     This site is protected by reCAPTCHA and the Google
@@ -929,18 +926,18 @@
 
 
         // reCAPTCHA v3 execution
-document.getElementById('executeRecaptcha').addEventListener('click', function(e) {
-    e.preventDefault();
-    this.disabled = true;
-    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
-    
-    grecaptcha.execute('6LePEAksAAAAAEGD_dFaus30i1QsGbRobKLLui6C', {action: 'submit'}).then(function(token) {
-        recaptchaToken = token;
-        document.getElementById('recaptcha-status').textContent = '✅ Verification complete!';
-        document.getElementById('executeRecaptcha').style.display = 'none';
-        console.log('reCAPTCHA token:', token);
-    });
-});
+        document.getElementById('executeRecaptcha').addEventListener('click', function (e) {
+            e.preventDefault();
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+
+            grecaptcha.execute('6LePEAksAAAAAEGD_dFaus30i1QsGbRobKLLui6C', { action: 'submit' }).then(function (token) {
+                recaptchaToken = token;
+                document.getElementById('recaptcha-status').textContent = '✅ Verification complete!';
+                document.getElementById('executeRecaptcha').style.display = 'none';
+                console.log('reCAPTCHA token:', token);
+            });
+        });
     </script>
 </body>
 
