@@ -931,27 +931,213 @@
 
 
         // reCAPTCHA v3 execution
-        document.getElementById('executeRecaptcha').addEventListener('click', function (e) {
-            e.preventDefault();
-            this.disabled = true;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+        // ... (Keep your State Management and DOM Elements variables above this line) ...
+        const step3 = document.getElementById('step3'); // Added Step 3 DOM element
+        const executeRecaptchaBtn = document.getElementById('executeRecaptcha'); // Button on step 3
+        const recaptchaStatus = document.getElementById('recaptcha-status'); // Status indicator on step 3
+        
+        // --- Configuration ---
+        const RECAPTCHA_SITE_KEY = "6LePEAksAAAAAEGD_dFaus30i1QsGbRobKLLui6C"; // Your site key
+        const LAMBDA_ENDPOINT = "https://nnfsrfwxld.execute-api.eu-north-1.amazonaws.com/default"; // <--- CHANGE THIS TO YOUR ACTUAL AWS API GATEWAY ENDPOINT
 
-            // Execute reCAPTCHA v3
-            grecaptcha.execute('6LePEAksAAAAAEGD_dFaus30i1QsGbRobKLLui6C', { action: 'submit' })
-                .then(function (token) {
-                    console.log('reCAPTCHA token obtained:', token);
-                    recaptchaToken = token;
+        // Event Listeners
+        nextBtn.addEventListener('click', handleNext);
+        backBtn.addEventListener('click', handleBack);
+        // Note: The executeRecaptchaBtn is now handled by the g-recaptcha-response
+        
+        // --- Helper Functions (Keep validateStep, toTitleCase, getFormData, showMessage, hideMessage as they are) ---
 
-                    // Hide button and show success message
-                    document.getElementById('executeRecaptcha').style.display = 'none';
-                    document.getElementById('recaptcha-status').style.display = 'block';
-                })
-                .catch(function (error) {
-                    console.error('reCAPTCHA error:', error);
-                    document.getElementById('executeRecaptcha').disabled = false;
-                    document.getElementById('executeRecaptcha').innerHTML = '<i class="fas fa-shield-alt"></i> Verify with reCAPTCHA';
+        function showMessage(text, type = 'success', target = messageBox) {
+            target.innerHTML = `
+                ${type === 'success'
+                    ? '<i class="fas fa-check-circle"></i>'
+                    : '<i class="fas fa-exclamation-circle"></i>'}
+                <span>${text}</span>
+            `;
+            target.className = `message ${type}`;
+            target.style.display = 'flex';
+            if (target === messageBox) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function hideMessage(target = messageBox) {
+            target.style.display = 'none';
+        }
+
+        function updateStep(stepNumber) {
+            currentStep = stepNumber;
+
+            // Update form sections
+            step1.classList.toggle('active', stepNumber === 1);
+            step2.classList.toggle('active', stepNumber === 2);
+            step3.classList.toggle('active', stepNumber === 3); // Use step3 variable
+
+            // Update buttons
+            backBtn.style.display = stepNumber > 1 ? 'flex' : 'none';
+            if (stepNumber === 1 || stepNumber === 2) {
+                nextBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Next Step';
+                nextBtn.disabled = false;
+            } else if (stepNumber === 3) {
+                nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
+                // Initially disable submit button on step 3 until reCAPTCHA is executed
+                nextBtn.disabled = !recaptchaToken; 
+            }
+
+            // Update progress
+            const steps = progressSteps.querySelectorAll('.step');
+            steps.forEach((step, index) => {
+                if (index + 1 <= stepNumber) {
+                    step.classList.add('active');
+                    step.classList.remove('inactive');
+                } else {
+                    step.classList.remove('active');
+                    step.classList.add('inactive');
+                }
+            });
+
+            if (stepNumber === 3 && !recaptchaToken) {
+                // If on step 3 and no token, trigger reCAPTCHA execution for the first time
+                executeRecaptcha();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // --- reCAPTCHA v3 Execution ---
+        function executeRecaptcha() {
+            if (typeof grecaptcha !== 'undefined') {
+                nextBtn.disabled = true;
+                executeRecaptchaBtn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Verifying...';
+                
+                grecaptcha.ready(function() {
+                    grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'submit_trial' })
+                        .then(function(token) {
+                            recaptchaToken = token;
+                            console.log('reCAPTCHA v3 token received:', recaptchaToken);
+                            executeRecaptchaBtn.style.display = 'none';
+                            recaptchaStatus.style.display = 'block';
+                            nextBtn.disabled = false; // Enable submit button
+                            nextBtn.focus();
+                        })
+                        .catch(function(error) {
+                            console.error('reCAPTCHA execution error:', error);
+                            showMessage('Security verification failed. Please try again.', 'error');
+                            executeRecaptchaBtn.innerHTML = '<i class="fas fa-redo"></i> Try Again';
+                            executeRecaptchaBtn.disabled = false;
+                            nextBtn.disabled = true;
+                        });
                 });
-        });
+            } else {
+                console.error("reCAPTCHA script not loaded.");
+                showMessage('reCAPTCHA script failed to load. Please check your connection.', 'error');
+            }
+        }
+        
+        // Manual execution if the user clicks the button (less common for v3, but helpful fallback)
+        executeRecaptchaBtn.addEventListener('click', executeRecaptcha);
+
+        // --- Step Handlers ---
+        function handleNext() {
+            if (currentStep === 1) {
+                if (validateStep(1)) {
+                    // Save step 1 data to the store (optional, but good practice)
+                    Object.assign(formDataStore, getFormData());
+                    updateStep(2);
+                }
+            } else if (currentStep === 2) {
+                if (validateStep(2)) {
+                    // Save step 2 data
+                    Object.assign(formDataStore, getFormData());
+                    updateStep(3);
+                }
+            } else if (currentStep === 3) {
+                // This is the submission step
+                if (!recaptchaToken) {
+                    // If the token somehow expired or wasn't generated
+                    showMessage('Please complete the security verification first.', 'error');
+                    executeRecaptcha(); // Try to get a new token
+                    return;
+                }
+                handleSubmit();
+            }
+        }
+
+        function handleBack() {
+            if (currentStep > 1) {
+                // The 'Back' button should take you to the *previous* step, not just step 1
+                updateStep(currentStep - 1); 
+                hideMessage();
+            }
+        }
+
+        // --- Submission Handler ---
+        async function handleSubmit() {
+            nextBtn.disabled = true;
+            nextBtn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Registering...';
+            hideMessage();
+            
+            // Collect final data and add the reCAPTCHA token
+            const finalData = {
+                ...getFormData(),
+                captchaToken: recaptchaToken, 
+            };
+            
+            // Remove the hardcoded test token logic for real submissions:
+            // if (window.location.search.includes('test-mode')) {
+            //     finalData.captchaToken = 'test-token-123';
+            // }
+
+            try {
+                const response = await fetch(LAMBDA_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(finalData),
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showMessage('✅ Success! Your free trial request has been submitted. Check your email for verification!', 'success');
+                    // You might want to hide the form or redirect here
+                    form.style.display = 'none';
+                } else {
+                    // Check for reCAPTCHA failure specifically
+                    if (result.message.includes("reCAPTCHA")) {
+                        showMessage('⚠️ Security check failed. Please try again. (Low reCAPTCHA score)', 'error');
+                        // Reset reCAPTCHA state to force a new execution
+                        recaptchaToken = null;
+                        recaptchaStatus.style.display = 'none';
+                        executeRecaptchaBtn.style.display = 'flex';
+                        executeRecaptchaBtn.innerHTML = '<i class="fas fa-shield-alt"></i> Verify with reCAPTCHA';
+                        nextBtn.disabled = true;
+                    } else {
+                        showMessage('❌ Submission failed: ' + result.message, 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                showMessage('An unexpected error occurred. Please try again later.', 'error');
+            } finally {
+                nextBtn.disabled = false;
+                nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
+            }
+        }
+
+        // --- Initializer ---
+        // Ensure initial button states are correct
+        updateStep(1);
+
+        // Placeholder for other handlers (verify, resend, back to signup) if they were fully implemented
+        function handleVerify() { /* ... */ }
+        function handleResend() { /* ... */ }
+        function handleBackToSignup() { /* ... */ }
+    </script>
+</body>
+
+</html>
     </script>
 </body>
 
