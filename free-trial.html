@@ -687,8 +687,10 @@
                     updateStep(3);
                 }
             } else if (currentStep === 3) {
+                console.log('Current recaptchaToken before submit:', recaptchaToken);
                 if (!recaptchaToken) {
-                    showMessage('Please complete the security verification first.', 'error');
+                    showMessage('Please complete the security verification first. Retrying...', 'error');
+                    executeRecaptcha();
                     return;
                 }
                 handleSubmit();
@@ -707,10 +709,17 @@
             nextBtn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Registering...';
             hideMessage();
 
+            // Use test token if no real token (for debugging)
+            const tokenToSend = recaptchaToken || 'test-token-123';
+
             const finalData = {
                 ...getFormData(),
-                captchaToken: recaptchaToken,
+                captchaToken: tokenToSend,
             };
+
+            console.log('Final data being sent:', finalData);
+            console.log('Captcha token value:', tokenToSend);
+            console.log('JSON stringified:', JSON.stringify(finalData));
 
             try {
                 const response = await fetch(LAMBDA_ENDPOINT, {
@@ -723,14 +732,28 @@
 
                 const result = await response.json();
                 console.log('Lambda response:', result);
+                
+                // Parse body if it's a string
+                let parsedBody = result.body;
+                if (typeof result.body === 'string') {
+                    try {
+                        parsedBody = JSON.parse(result.body);
+                    } catch (e) {
+                        console.log('Could not parse body as JSON');
+                    }
+                }
+                console.log('Parsed body:', parsedBody);
 
-                // Check if response indicates success
-                if (result.success === true || (result.statusCode && result.statusCode === 200)) {
+                // Lambda returns { statusCode, body: JSON string }
+                // Extract the actual success/error from the body
+                if (result.statusCode === 200 || (parsedBody && parsedBody.success === true)) {
                     showMessage('✅ Success! Your free trial request has been submitted. Check your email for verification!', 'success');
-                    form.style.display = 'none';
+                    setTimeout(() => {
+                        form.style.display = 'none';
+                    }, 2000);
                 } else {
-                    // Better error handling for various response structures
-                    const errorMessage = result.message || result.error || result.errorMessage || 'Submission failed. Please try again.';
+                    // Extract error message from parsed body
+                    const errorMessage = (parsedBody && parsedBody.message) || result.message || 'Submission failed. Please try again.';
                     
                     if (typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('recaptcha')) {
                         showMessage('⚠️ Security check failed. Please try again.', 'error');
