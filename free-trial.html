@@ -48,7 +48,6 @@
             color: #6b7280;
         }
 
-        /* Progress Steps */
         .progress-steps {
             display: flex;
             justify-content: space-between;
@@ -93,7 +92,6 @@
             text-align: center;
         }
 
-        /* Messages */
         .message {
             padding: 1rem;
             border-radius: 0.75rem;
@@ -122,7 +120,6 @@
             margin-top: 2px;
         }
 
-        /* Form Styles */
         .form-section {
             display: none;
         }
@@ -206,7 +203,6 @@
             cursor: pointer;
         }
 
-        /* Button Styles */
         .form-actions {
             display: flex;
             gap: 1rem;
@@ -286,91 +282,6 @@
             color: #4338ca;
         }
 
-        /* Verification Modal */
-        .verification-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .verification-modal.show {
-            display: flex;
-        }
-
-        .verification-content {
-            background: white;
-            border-radius: 1.5rem;
-            padding: 2rem;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-        }
-
-        .verification-icon {
-            width: 64px;
-            height: 64px;
-            background-color: #f0f4ff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            color: #4f46e5;
-        }
-
-        .verification-content h2 {
-            font-size: 1.5rem;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-        }
-
-        .verification-content p {
-            color: #6b7280;
-            margin-bottom: 1.5rem;
-        }
-
-        .verification-input {
-            font-size: 1.5rem;
-            letter-spacing: 0.25rem;
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .test-code {
-            font-size: 0.75rem;
-            color: #9ca3af;
-            margin-bottom: 1rem;
-        }
-
-        /* Trust Indicators */
-        .trust-indicators {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid #e5e7eb;
-            text-align: center;
-            font-size: 0.875rem;
-            color: #6b7280;
-        }
-
-        .trust-item strong {
-            display: block;
-            color: #4f46e5;
-            font-size: 1rem;
-            margin-bottom: 0.25rem;
-        }
-
-        /* reCAPTCHA Styles */
         .recaptcha-container {
             display: flex;
             justify-content: center;
@@ -396,6 +307,25 @@
             text-decoration: underline;
         }
 
+        .trust-indicators {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .trust-item strong {
+            display: block;
+            color: #4f46e5;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
         @media (max-width: 640px) {
             .signup-container {
                 padding: 1.5rem;
@@ -408,24 +338,17 @@
             .trust-indicators {
                 grid-template-columns: 1fr;
             }
-
-            .recaptcha-container {
-                margin: 1.5rem 0;
-                padding: 0.75rem;
-            }
         }
     </style>
 </head>
 
 <body>
     <div class="signup-container">
-        <!-- Header -->
         <div class="signup-header">
             <h1>Start Your Free Trial</h1>
             <p>Join teams already using Bridge Interactive</p>
         </div>
 
-        <!-- Progress Steps -->
         <div class="progress-steps" id="progressSteps">
             <div class="step active">
                 <div class="step-number">1</div>
@@ -437,12 +360,9 @@
             </div>
         </div>
 
-        <!-- Messages -->
         <div id="messageBox" class="message" style="display: none;"></div>
 
-        <!-- Form -->
         <form id="signupForm">
-            <!-- Step 1: Personal Information -->
             <div class="form-section active" id="step1">
                 <h2>Your Information</h2>
 
@@ -473,7 +393,6 @@
                 </div>
             </div>
 
-            <!-- Step 2: Company Information -->
             <div class="form-section" id="step2">
                 <h2>Company Information</h2>
 
@@ -531,20 +450,18 @@
                 </div>
             </div>
 
-            <!-- Step 3: reCAPTCHA Verification -->
             <div class="form-section" id="step3">
                 <h2>Security Verification</h2>
                 <p style="color: #6b7280; margin-bottom: 1.5rem;">
                     We use reCAPTCHA to protect our form from abuse. This step is powered by Google.
                 </p>
                 <div class="recaptcha-container">
-                    <button type="button" id="executeRecaptcha" class="btn-primary" style="width: 100%;">
-                        <i class="fas fa-shield-alt"></i> Verify with reCAPTCHA
-                    </button>
-                </div>
-                <div id="recaptcha-status"
-                    style="text-align: center; color: #4f46e5; font-weight: bold; margin-top: 1rem; display: none;">
-                    ✅ Verification complete! You can now register.
+                    <div id="recaptcha-status" style="text-align: center; color: #4f46e5; font-weight: bold; display: none;">
+                        ✅ Verification complete! You can now register.
+                    </div>
+                    <div id="recaptcha-pending" style="text-align: center; color: #6b7280;">
+                        Verifying security...
+                    </div>
                 </div>
                 <p class="recaptcha-info">
                     This site is protected by reCAPTCHA and the Google
@@ -553,7 +470,6 @@
                 </p>
             </div>
 
-            <!-- Form Actions -->
             <div class="form-actions">
                 <button type="button" id="backBtn" class="btn-secondary" style="display: none;">
                     <i class="fas fa-chevron-left"></i> Back
@@ -566,7 +482,6 @@
             </div>
         </form>
 
-        <!-- Trust Indicators -->
         <div class="trust-indicators">
             <div class="trust-item">
                 <strong>30 days</strong>
@@ -583,42 +498,12 @@
         </div>
     </div>
 
-    <!-- Verification Modal -->
-    <div class="verification-modal" id="verificationModal">
-        <div class="verification-content">
-            <div class="verification-icon">
-                <i class="fas fa-check-circle" style="font-size: 2rem;"></i>
-            </div>
-            <h2>Verify Your Email</h2>
-            <p id="verificationEmail"></p>
-
-            <div id="verificationMessage" class="message" style="display: none;"></div>
-
-            <div class="form-group">
-                <label>Verification Code</label>
-                <input type="text" id="verificationCode" class="verification-input" placeholder="000000" maxlength="6"
-                    style="text-transform: uppercase;">
-            </div>
-            <p class="test-code">(Test code: 123456)</p>
-
-            <div class="form-actions">
-                <button type="button" id="verifyBtn" class="btn-primary">
-                    <i class="fas fa-check"></i> Verify & Create Account
-                </button>
-            </div>
-
-            <button type="button" id="resendBtn" class="btn-secondary" style="width: 100%; margin-top: 1rem;">
-                <i class="fas fa-redo"></i> Didn't receive the code? Resend
-            </button>
-
-            <button type="button" id="backToSignupBtn" class="btn-secondary" style="width: 100%; margin-top: 0.5rem;">
-                <i class="fas fa-arrow-left"></i> Back to Sign Up
-            </button>
-        </div>
-    </div>
-
     <script>
-        // State Management
+        // Configuration
+        const RECAPTCHA_SITE_KEY = "6LePEAksAAAAAEGD_dFaus30i1QsGbRobKLLui6C";
+        const LAMBDA_ENDPOINT = "https://nnfsrfwxld.execute-api.eu-north-1.amazonaws.com/default";
+
+        // State
         let currentStep = 1;
         let recaptchaToken = null;
         let formDataStore = {
@@ -635,42 +520,23 @@
             state: '',
             trialDays: '30',
             currencyCode: 'USD',
-            billingEmail: '',
-            clientId: '',
-            planId: '',
-            companyNumber: '',
-            taxIdentifier: '',
-            locale: 'en-US',
         };
 
         // DOM Elements
         const form = document.getElementById('signupForm');
         const step1 = document.getElementById('step1');
         const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
         const nextBtn = document.getElementById('nextBtn');
         const backBtn = document.getElementById('backBtn');
         const progressSteps = document.getElementById('progressSteps');
         const messageBox = document.getElementById('messageBox');
-        const verificationModal = document.getElementById('verificationModal');
-        const verificationEmail = document.getElementById('verificationEmail');
-        const verificationCode = document.getElementById('verificationCode');
-        const verifyBtn = document.getElementById('verifyBtn');
-        const resendBtn = document.getElementById('resendBtn');
-        const backToSignupBtn = document.getElementById('backToSignupBtn');
-        const verificationMessage = document.getElementById('verificationMessage');
+        const recaptchaStatus = document.getElementById('recaptcha-status');
+        const recaptchaPending = document.getElementById('recaptcha-pending');
 
         // Event Listeners
         nextBtn.addEventListener('click', handleNext);
         backBtn.addEventListener('click', handleBack);
-        verifyBtn.addEventListener('click', handleVerify);
-        resendBtn.addEventListener('click', handleResend);
-        backToSignupBtn.addEventListener('click', handleBackToSignup);
-
-        // reCAPTCHA Callback
-        function onRecaptchaSuccess(token) {
-            recaptchaToken = token;
-            console.log('reCAPTCHA token received');
-        }
 
         // Helper Functions
         function showMessage(text, type = 'success') {
@@ -687,10 +553,6 @@
 
         function hideMessage() {
             messageBox.style.display = 'none';
-        }
-
-        function toTitleCase(str) {
-            return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
         }
 
         function getFormData() {
@@ -757,234 +619,20 @@
         function updateStep(stepNumber) {
             currentStep = stepNumber;
 
-            // Update form sections
             step1.classList.toggle('active', stepNumber === 1);
             step2.classList.toggle('active', stepNumber === 2);
-            document.getElementById('step3').classList.toggle('active', stepNumber === 3);
+            step3.classList.toggle('active', stepNumber === 3);
 
-            // Update buttons
             backBtn.style.display = stepNumber > 1 ? 'flex' : 'none';
-            if (stepNumber === 1) {
-                nextBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Next Step';
-            } else if (stepNumber === 2) {
-                nextBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Next Step';
-            } else if (stepNumber === 3) {
-                nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
-            }
 
-            // Update progress
-            const steps = progressSteps.querySelectorAll('.step');
-            steps.forEach((step, index) => {
-                if (index + 1 <= stepNumber) {
-                    step.classList.add('active');
-                    step.classList.remove('inactive');
-                } else {
-                    step.classList.remove('active');
-                    step.classList.add('inactive');
-                }
-            });
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function handleNext() {
-            if (currentStep === 1) {
-                if (validateStep(1)) {
-                    updateStep(2);
-                }
-            } else if (currentStep === 2) {
-                if (validateStep(2)) {
-                    updateStep(3);
-                }
-            } else if (currentStep === 3) {
-                if (!recaptchaToken) {
-                    showMessage('Please complete the reCAPTCHA verification', 'error');
-                    return;
-                }
-                handleSubmit();
-            }
-        }
-
-        function handleBack() {
-            updateStep(1);
-            hideMessage();
-        }
-
-        function handleSubmit() {
-            nextBtn.disabled = true;
-            nextBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
-
-            const data = getFormData();
-            formDataStore = { ...formDataStore, ...data };
-
-            const payload = {
-                ...formDataStore,
-                captchaToken: recaptchaToken
-            };
-
-            // Call your AWS Lambda function
-            fetch('https://nnfsrfwxld.execute-api.eu-north-1.amazonaws.com/default', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-                .then(res => res.json())
-                .then(result => {
-                    if (result.success) {
-                        showMessage('Registration submitted! Check your email for confirmation.', 'success');
-                        setTimeout(() => {
-                            window.location.href = '/';
-                        }, 3000);
-                    } else {
-                        showMessage(result.message || 'Verification failed. Please try again.', 'error');
-                        nextBtn.disabled = false;
-                        nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
-                        grecaptcha.reset();
-                        recaptchaToken = null;
-                    }
-                })
-                .catch(err => {
-                    console.error('Error:', err);
-                    showMessage('An error occurred. Please try again.', 'error');
-                    nextBtn.disabled = false;
-                    nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
-                    grecaptcha.reset();
-                    recaptchaToken = null;
-                });
-        }
-
-        function handleVerify() {
-            if (!verificationCode.value.trim()) {
-                showVerificationMessage('Please enter the verification code', 'error');
-                return;
-            }
-
-            verifyBtn.disabled = true;
-            verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
-
-            // Simulate verification
-            setTimeout(() => {
-                if (verificationCode.value === '123456') {
-                    // Success - prepare payload for backoffice
-                    const payload = {
-                        ...formDataStore,
-                        clientId: `cli_${Date.now()}`,
-                        firstName: toTitleCase(formDataStore.firstName),
-                        lastName: toTitleCase(formDataStore.lastName),
-                        billingEmail: formDataStore.email,
-                        trialDays: parseInt(formDataStore.trialDays),
-                    };
-
-                    console.log('Account created with payload:', payload);
-
-                    showVerificationMessage('Account created successfully! Redirecting...', 'success');
-
-                    // Here you would send the payload to your backoffice API
-                    // await sendToBackoffice(payload);
-
-                    setTimeout(() => {
-                        // Redirect after success
-                        window.location.href = '/dashboard';
-                    }, 2000);
-                } else {
-                    showVerificationMessage('Invalid verification code. Please try again.', 'error');
-                    verifyBtn.disabled = false;
-                    verifyBtn.innerHTML = '<i class="fas fa-check"></i> Verify & Create Account';
-                }
-            }, 1000);
-        }
-
-        function handleResend() {
-            resendBtn.disabled = true;
-            resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-
-            setTimeout(() => {
-                showVerificationMessage('Verification code resent to your email!', 'success');
-                verificationCode.value = '';
-                resendBtn.disabled = false;
-                resendBtn.innerHTML = '<i class="fas fa-redo"></i> Didn\'t receive the code? Resend';
-            }, 1000);
-        }
-
-        function handleBackToSignup() {
-            verificationModal.classList.remove('show');
-            verificationCode.value = '';
-            hideVerificationMessage();
-            updateStep(1);
-            form.reset();
-        }
-
-        function showVerificationMessage(text, type = 'success') {
-            verificationMessage.innerHTML = `
-                ${type === 'success'
-                    ? '<i class="fas fa-check-circle"></i>'
-                    : '<i class="fas fa-exclamation-circle"></i>'}
-                <span>${text}</span>
-            `;
-            verificationMessage.className = `message ${type}`;
-            verificationMessage.style.display = 'flex';
-        }
-
-        function hideVerificationMessage() {
-            verificationMessage.style.display = 'none';
-        }
-
-
-        // reCAPTCHA v3 execution
-        // ... (Keep your State Management and DOM Elements variables above this line) ...
-        const step3 = document.getElementById('step3'); // Added Step 3 DOM element
-        const executeRecaptchaBtn = document.getElementById('executeRecaptcha'); // Button on step 3
-        const recaptchaStatus = document.getElementById('recaptcha-status'); // Status indicator on step 3
-        
-        // --- Configuration ---
-        const RECAPTCHA_SITE_KEY = "6LePEAksAAAAAEGD_dFaus30i1QsGbRobKLLui6C"; // Your site key
-        const LAMBDA_ENDPOINT = "https://nnfsrfwxld.execute-api.eu-north-1.amazonaws.com/default"; // <--- CHANGE THIS TO YOUR ACTUAL AWS API GATEWAY ENDPOINT
-
-        // Event Listeners
-        nextBtn.addEventListener('click', handleNext);
-        backBtn.addEventListener('click', handleBack);
-        // Note: The executeRecaptchaBtn is now handled by the g-recaptcha-response
-        
-        // --- Helper Functions (Keep validateStep, toTitleCase, getFormData, showMessage, hideMessage as they are) ---
-
-        function showMessage(text, type = 'success', target = messageBox) {
-            target.innerHTML = `
-                ${type === 'success'
-                    ? '<i class="fas fa-check-circle"></i>'
-                    : '<i class="fas fa-exclamation-circle"></i>'}
-                <span>${text}</span>
-            `;
-            target.className = `message ${type}`;
-            target.style.display = 'flex';
-            if (target === messageBox) {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
-
-        function hideMessage(target = messageBox) {
-            target.style.display = 'none';
-        }
-
-        function updateStep(stepNumber) {
-            currentStep = stepNumber;
-
-            // Update form sections
-            step1.classList.toggle('active', stepNumber === 1);
-            step2.classList.toggle('active', stepNumber === 2);
-            step3.classList.toggle('active', stepNumber === 3); // Use step3 variable
-
-            // Update buttons
-            backBtn.style.display = stepNumber > 1 ? 'flex' : 'none';
             if (stepNumber === 1 || stepNumber === 2) {
                 nextBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Next Step';
                 nextBtn.disabled = false;
             } else if (stepNumber === 3) {
                 nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
-                // Initially disable submit button on step 3 until reCAPTCHA is executed
-                nextBtn.disabled = !recaptchaToken; 
+                nextBtn.disabled = !recaptchaToken;
             }
 
-            // Update progress
             const steps = progressSteps.querySelectorAll('.step');
             steps.forEach((step, index) => {
                 if (index + 1 <= stepNumber) {
@@ -997,66 +645,50 @@
             });
 
             if (stepNumber === 3 && !recaptchaToken) {
-                // If on step 3 and no token, trigger reCAPTCHA execution for the first time
                 executeRecaptcha();
             }
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
-        // --- reCAPTCHA v3 Execution ---
-        function executeRecaptcha() {
-            if (typeof grecaptcha !== 'undefined') {
-                nextBtn.disabled = true;
-                executeRecaptchaBtn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Verifying...';
-                
-                grecaptcha.ready(function() {
-                    grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'submit_trial' })
-                        .then(function(token) {
-                            recaptchaToken = token;
-                            console.log('reCAPTCHA v3 token received:', recaptchaToken);
-                            executeRecaptchaBtn.style.display = 'none';
-                            recaptchaStatus.style.display = 'block';
-                            nextBtn.disabled = false; // Enable submit button
-                            nextBtn.focus();
-                        })
-                        .catch(function(error) {
-                            console.error('reCAPTCHA execution error:', error);
-                            showMessage('Security verification failed. Please try again.', 'error');
-                            executeRecaptchaBtn.innerHTML = '<i class="fas fa-redo"></i> Try Again';
-                            executeRecaptchaBtn.disabled = false;
-                            nextBtn.disabled = true;
-                        });
-                });
-            } else {
-                console.error("reCAPTCHA script not loaded.");
-                showMessage('reCAPTCHA script failed to load. Please check your connection.', 'error');
-            }
-        }
-        
-        // Manual execution if the user clicks the button (less common for v3, but helpful fallback)
-        executeRecaptchaBtn.addEventListener('click', executeRecaptcha);
 
-        // --- Step Handlers ---
+        function executeRecaptcha() {
+            if (typeof grecaptcha === 'undefined') {
+                showMessage('reCAPTCHA script failed to load. Please refresh the page.', 'error');
+                return;
+            }
+
+            grecaptcha.ready(() => {
+                grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'submit_trial' })
+                    .then(token => {
+                        recaptchaToken = token;
+                        console.log('reCAPTCHA token received successfully');
+                        recaptchaPending.style.display = 'none';
+                        recaptchaStatus.style.display = 'block';
+                        nextBtn.disabled = false;
+                        nextBtn.focus();
+                    })
+                    .catch(error => {
+                        console.error('reCAPTCHA error:', error);
+                        showMessage('Security verification failed. Please refresh and try again.', 'error');
+                        nextBtn.disabled = true;
+                    });
+            });
+        }
+
         function handleNext() {
             if (currentStep === 1) {
                 if (validateStep(1)) {
-                    // Save step 1 data to the store (optional, but good practice)
                     Object.assign(formDataStore, getFormData());
                     updateStep(2);
                 }
             } else if (currentStep === 2) {
                 if (validateStep(2)) {
-                    // Save step 2 data
                     Object.assign(formDataStore, getFormData());
                     updateStep(3);
                 }
             } else if (currentStep === 3) {
-                // This is the submission step
                 if (!recaptchaToken) {
-                    // If the token somehow expired or wasn't generated
                     showMessage('Please complete the security verification first.', 'error');
-                    executeRecaptcha(); // Try to get a new token
                     return;
                 }
                 handleSubmit();
@@ -1065,28 +697,20 @@
 
         function handleBack() {
             if (currentStep > 1) {
-                // The 'Back' button should take you to the *previous* step, not just step 1
-                updateStep(currentStep - 1); 
+                updateStep(currentStep - 1);
                 hideMessage();
             }
         }
 
-        // --- Submission Handler ---
         async function handleSubmit() {
             nextBtn.disabled = true;
             nextBtn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Registering...';
             hideMessage();
-            
-            // Collect final data and add the reCAPTCHA token
+
             const finalData = {
                 ...getFormData(),
-                captchaToken: recaptchaToken, 
+                captchaToken: recaptchaToken,
             };
-            
-            // Remove the hardcoded test token logic for real submissions:
-            // if (window.location.search.includes('test-mode')) {
-            //     finalData.captchaToken = 'test-token-123';
-            // }
 
             try {
                 const response = await fetch(LAMBDA_ENDPOINT, {
@@ -1098,46 +722,38 @@
                 });
 
                 const result = await response.json();
+                console.log('Lambda response:', result);
 
-                if (result.success) {
+                // Check if response indicates success
+                if (result.success === true || (result.statusCode && result.statusCode === 200)) {
                     showMessage('✅ Success! Your free trial request has been submitted. Check your email for verification!', 'success');
-                    // You might want to hide the form or redirect here
                     form.style.display = 'none';
                 } else {
-                    // Check for reCAPTCHA failure specifically
-                    if (result.message.includes("reCAPTCHA")) {
-                        showMessage('⚠️ Security check failed. Please try again. (Low reCAPTCHA score)', 'error');
-                        // Reset reCAPTCHA state to force a new execution
+                    // Better error handling for various response structures
+                    const errorMessage = result.message || result.error || result.errorMessage || 'Submission failed. Please try again.';
+                    
+                    if (typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('recaptcha')) {
+                        showMessage('⚠️ Security check failed. Please try again.', 'error');
                         recaptchaToken = null;
                         recaptchaStatus.style.display = 'none';
-                        executeRecaptchaBtn.style.display = 'flex';
-                        executeRecaptchaBtn.innerHTML = '<i class="fas fa-shield-alt"></i> Verify with reCAPTCHA';
+                        recaptchaPending.style.display = 'block';
                         nextBtn.disabled = true;
                     } else {
-                        showMessage('❌ Submission failed: ' + result.message, 'error');
+                        showMessage(`❌ ${errorMessage}`, 'error');
+                        nextBtn.disabled = false;
+                        nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
                     }
                 }
             } catch (error) {
                 console.error('Submission error:', error);
-                showMessage('An unexpected error occurred. Please try again later.', 'error');
-            } finally {
+                showMessage(`An error occurred: ${error.message || 'Please try again later.'}`, 'error');
                 nextBtn.disabled = false;
                 nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Register & Verify';
             }
         }
 
-        // --- Initializer ---
-        // Ensure initial button states are correct
+        // Initialize
         updateStep(1);
-
-        // Placeholder for other handlers (verify, resend, back to signup) if they were fully implemented
-        function handleVerify() { /* ... */ }
-        function handleResend() { /* ... */ }
-        function handleBackToSignup() { /* ... */ }
-    </script>
-</body>
-
-</html>
     </script>
 </body>
 
