@@ -747,7 +747,7 @@
                 // Lambda returns { statusCode, body: JSON string }
                 // Extract the actual success/error from the body
                 if (result.statusCode === 200 || (parsedBody && parsedBody.success === true)) {
-                    showMessage('✅ Success! Your free trial request has been submitted. Check your email for verification!', 'success');
+                    showMessage('✅ Success! Your free trial request has been submitted. Our team will contact you shortly to activate your account.', 'success');
                     setTimeout(() => {
                         form.style.display = 'none';
                     }, 2000);
