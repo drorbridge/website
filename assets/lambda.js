@@ -120,6 +120,8 @@ export const handler = async (event) => {
     /*** STEP 2: Try to register in Paddle ***/
     let paddleResponse = null;
     let paddleError = null;
+    let subscriptionResponseData = null;
+    let subscriptionError = null;
 
     if (PADDLE_API_KEY && PADDLE_PLAN_ID) {
       try {
@@ -159,6 +161,44 @@ export const handler = async (event) => {
 
         paddleResponse = await response.json();
         console.log("✅ Paddle customer created:", paddleResponse);
+        if (paddleResponse?.data?.id) {
+          const customerId = paddleResponse.data.id;
+
+      
+          const subscriptionPayload = {
+              plan_id: PADDLE_PLAN_ID,
+              customer_id: customerId,
+              trial_days: body.trialDays || 0,
+              // optional: coupon_code, currency, etc.
+          };
+      
+          try {
+            const subscriptionResponse = await fetch(
+                "https://vendors.paddle.com/api/2.0/subscription/users",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${PADDLE_API_KEY}`,
+                    },
+                    body: JSON.stringify(subscriptionPayload),
+                }
+            );
+    
+            if (!subscriptionResponse.ok) {
+                const text = await subscriptionResponse.text();
+                throw new Error(`Paddle subscription error ${subscriptionResponse.status}: ${text}`);
+            }
+    
+            subscriptionResponseData = await subscriptionResponse.json();
+            console.log("✅ Subscription started:", subscriptionResponseData);
+        } catch (err) {
+            console.error("❌ Paddle subscription failed:", err.message);
+            subscriptionError = err.message;
+        }
+      }
+      
+
       } catch (err) {
         console.error("❌ Paddle API call failed:", err.message);
         paddleError = err.message;
@@ -195,6 +235,31 @@ export const handler = async (event) => {
       `;
     }
   }
+
+  let subscriptionStatusHtml = `
+<div class="section">
+  <h3>Subscription Status</h3>
+  <div class="info-row"><span class="label">Status:</span> ⚠️ Not attempted</div>
+</div>
+`;
+
+if (subscriptionResponseData) {
+    subscriptionStatusHtml = `
+    <div class="section">
+      <h3>Subscription Status</h3>
+      <div class="info-row"><span class="label">Status:</span> ✅ Started Successfully</div>
+      <div class="info-row"><span class="label">Subscription ID:</span> ${subscriptionResponseData.response?.subscription_id || 'N/A'}</div>
+    </div>
+    `;
+} else if (subscriptionError) {
+    subscriptionStatusHtml = `
+    <div class="section">
+      <h3>Subscription Status</h3>
+      <div class="info-row"><span class="label">Status:</span> ❌ Failed</div>
+      <div class="info-row"><span class="label">Error:</span> ${subscriptionError}</div>
+    </div>
+    `;
+}
 
     // Format email
     const htmlContent = `
@@ -247,6 +312,8 @@ export const handler = async (event) => {
         </div>
 
         ${paddleStatusHtml}
+        ${subscriptionStatusHtml}
+        
         <div class="footer">
             <p>This is an automated registration. Please follow up within 24 hours.</p>
         </div>
@@ -290,7 +357,10 @@ export const handler = async (event) => {
         message: "Registration successful! Email sent.",
         paddleStatus: paddleResponse ? "created" : (PADDLE_API_KEY && PADDLE_PLAN_ID) ? "failed" : "skipped",
         paddleError: paddleError || null,
-        paddleCustomer: paddleResponse || null
+        paddleCustomer: paddleResponse || null,
+        subscriptionStatus: subscriptionResponseData ? "started" : subscriptionError ? "failed" : "skipped",
+        subscriptionError: subscriptionError || null,
+        subscriptionData: subscriptionResponseData || null
       })
     };
 
